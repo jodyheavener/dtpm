@@ -1,0 +1,17 @@
+{
+  "name": "",
+  "version": "",
+  "displayName": "",
+  "description": "",
+  "author": {
+    "name": "",
+    "email": ""
+  },
+  "homepage": "",
+  "icon": "assets/icon.png",
+  "dockIcon": "default",
+  "licenses": [
+    "Apache-2.0"
+  ],
+  "manifestVersion": "0.2.0"
+}

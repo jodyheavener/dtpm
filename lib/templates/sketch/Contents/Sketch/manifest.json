@@ -1,0 +1,12 @@
+{
+  "$schema": "https://raw.githubusercontent.com/BohemianCoding/SketchAPI/develop/docs/sketch-plugin-manifest-schema.json",
+  "icon": "icon.png",
+  "disableCocoaScriptPreprocessor": true,
+  "appcast": "https://raw.githubusercontent.com/master/.appcast.xml",
+  "version": "",
+  "description": "",
+  "name": "",
+  "identifier": "",
+  "author": "",
+  "authorEmail": ""
+}

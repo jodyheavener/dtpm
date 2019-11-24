@@ -1,0 +1,26 @@
+{
+  "id": "HOW_TO_SHOW_AN_ALERT",
+  "name": "(H2) How to show an alert",
+  "version": "1.0.0",
+  "host": {
+    "app": "XD",
+    "minVersion": "13.0"
+  },
+  "icons": [
+    {
+      "width": 24,
+      "height": 24,
+      "path": "images/icon-24.png"
+    },
+    {
+      "width": 48,
+      "height": 48,
+      "path": "images/icon-48.png"
+    },
+    {
+      "width": 512,
+      "height": 512,
+      "path": "images/icon-512.png"
+    }
+  ]
+}

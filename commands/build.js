@@ -1,25 +1,27 @@
-const fs = require('fs-extra');
-const { intro, error, success } = require('../lib/utils');
-const platforms = require('../lib/platforms');
+const Plugin = require('../library/models/plugin');
+const { platforms: availablePlatforms } = require('../library/constants');
+const { intro, info, success } = require('../library/utilities/messages');
 
-const build = async (command) => {
-  const manifestPath = `${process.cwd()}/manifest.json`;
-
-  intro(command);
-
-  if (!fs.existsSync(manifestPath)) {
-    return error(`Can't find manifest file. Are you in your plugin directory?`);
-  }
-
-  success('Building design plugins.');
-
-  const manifest = require(manifestPath);
-  const platformExecutions = manifest.platforms.map((platform) => {
-    return platforms[platform].call(this, command, manifest, __dirname, process.cwd());
+const command = async (command) => {
+  const { watch } = command;
+  const plugin = new Plugin(process.cwd(), true);
+  const platforms = availablePlatforms.filter((platform) => {
+    const keys = plugin.manifest.platforms || [];
+    return keys.includes(platform.id);
   });
 
-  await Promise.all(platformExecutions);
-  success('All platforms built!');
+  intro(command);
+  info(`Building design plugins for ${platforms.map(p => p.name).join(', ')}`);
+
+  const platformBuilds = platforms.map((platform) => {
+    platform.setPlugin(plugin);
+    platform.setCommand(command);
+
+    return platform.build();
+  });
+
+  await Promise.all(platformBuilds);
+  success('Build succeeded!');
 }
 
-module.exports = build;
+module.exports = command;

@@ -6,6 +6,8 @@ const program = new commander.Command();
 
 program.version(package.version);
 
+// TODO: Add verbose option
+
 program
   .command('new <name>')
   .option('-d, --dir <value>', 'Directory to create the files in, defaults to sanitized name')

@@ -5,37 +5,41 @@ const Platform = require('../platform');
 const { cleanObject, safeAccess } = require('../../utilities/objects');
 
 class Sketch extends Platform {
-  constructor() {
-    super({
-      id: 'sketch',
-      name: 'Sketch',
-      iconSizes: [128]
-    });
+  get id() {
+    return 'sketch';
+  }
+
+  get name() {
+    return 'Sketch';
+  }
+
+  get iconSizes() {
+    return [128];
+  }
+
+  get buildDirectory() {
+    if (!this.plugin) {
+      this.fatal('Cannot call buildDirectory before assigning Plugin instance.');
+    }
+
+    return `${this.plugin.manifest.name}.sketchplugin`;
   }
 
   get pluginsPath() {
     return path.join(homeDir, 'Library', 'Application Support', 'com.bohemiancoding.sketch3', 'Plugins');
   }
 
-  get buildManifestPath() {
+  get manifestPath() {
     return path.join(this.buildPath, 'Contents', 'Sketch', 'manifest.json');
   }
 
-  get buildAssetsPath() {
+  get assetsPath() {
     return path.join(this.buildPath, 'Contents', 'Resources')
   }
 
-  get symlinkName() {
-    if (!this.plugin || !this.plugin.manifest.name) {
-      this.fatal('Called symlinkName before plugin instance was loaded, or plugin manifest does not have a name!');
-    }
-
-    return `${this.plugin.manifest.name}.sketchplugin`;
-  }
-
-  get updatedManifestStructure() {
-    if (!this.plugin || !this.plugin.manifest) {
-      this.fatal('Cannot call updatedManifestStructure before calling setPlugin to load build manifest.');
+  get mergedManifestStructure() {
+    if (!this.plugin) {
+      this.fatal('Cannot call `mergedManifestStructure` before assigning Plugin instance.');
     }
 
     const manifest = this.plugin.manifest;

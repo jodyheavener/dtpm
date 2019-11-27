@@ -4,27 +4,10 @@ const Jimp = require('jimp');
 const { fatal, info, success, warn } = require('../utilities/messages');
 
 class Platform {
-  constructor(options) {
-    this.id = options.id;
-    this.name = options.name;
-    this.iconSizes = options.iconSizes;
-  }
-
-  success(message) {
-    return success(`[${this.name}] ${message}`);
-  }
-
-  fatal(message) {
-    return fatal(`[${this.name}] ${message}`);
-  }
-
-  warn(message) {
-    return warn(`[${this.name}] ${message}`);
-  }
-
-  info(message) {
-    return info(`[${this.name}] ${message}`);
-  }
+  success(message) { return success(`[${this.name}] ${message}`); }
+  fatal(message) { return fatal(`[${this.name}] ${message}`); }
+  warn(message) { return warn(`[${this.name}] ${message}`); }
+  info(message) { return info(`[${this.name}] ${message}`); }
 
   setPlugin(pluginInstance) {
     this.plugin = pluginInstance;
@@ -34,86 +17,120 @@ class Platform {
     this.command = commandInstance;
   }
 
+  get id() {
+    this.fatal('Platform subclass must implement `id`.');
+  }
+
+  get name() {
+    this.fatal('Platform subclass must implement `name`.');
+  }
+
+  get iconSizes() {
+    this.fatal('Platform subclass must implement `iconSizes`.');
+  }
+
   get pluginsPath() {
-    this.fatal('Platform subclass must implement pluginsPath.');
+    this.fatal('Platform subclass must implement `pluginsPath`.');
   }
 
   get templatePath() {
     return path.join(__dirname, '../../', 'templates', this.id);
   }
 
-  get buildPath() {
+  get buildDirectory() {
     if (!this.plugin) {
-      this.fatal('Cannot call buildPath before calling setPlugin.');
+      this.fatal('Cannot call `buildDirectory` before assigning Plugin instance.');
     }
 
-    return path.join(this.plugin.outputPath, 'build', this.id);
+    return this.plugin.manifest.name;
   }
 
-  get buildManifestPath() {
-    return `${this.buildPath}/manifest.json`;
+  get buildPath() {
+    if (!this.plugin) {
+      this.fatal('Cannot call `buildPath` before assigning Plugin instance.');
+    }
+
+    return path.join(this.plugin.outputPath, 'build', this.id, this.buildDirectory);
   }
 
-  get buildManifestPath() {
+  get manifestPath() {
     return path.join(this.buildPath, 'manifest.json');
   }
 
-  get buildAssetsPath() {
-    return path.join(this.buildPath, 'assets')
+  get assetsPath() {
+    return path.join(this.buildPath, 'assets');
   }
 
-  loadBuildManifest() {
+  loadManifest() {
     if (!this.plugin) {
-      this.fatal('Cannot call loadBuildManifest before calling setPlugin.');
+      this.fatal('Cannot call `loadManifest` before assigning Plugin instance.');
     }
 
-    if (!fs.existsSync(this.buildManifestPath)) {
+    if (!fs.existsSync(this.manifestPath)) {
       this.fatal(`Can't find plugin manifest file.`);
     }
 
-    this.buildManifestData = require(this.buildManifestPath);
+    this.manifestData = require(this.manifestPath);
   }
 
-  get buildManifest() {
-    return this.buildManifestData;
+  get manifest() {
+    return this.manifestData;
   }
 
-  set buildManifest(value) {
-    this.buildManifestData = value;
+  set manifest(value) {
+    this.manifestData = value;
 
-    fs.writeJsonSync(this.buildManifestPath, this.buildManifestData, {
+    fs.writeJsonSync(this.manifestPath, this.manifestData, {
       spaces: 2
     });
   }
 
   build() {
-    this.copyTemplate();
-    this.generateIcons();
-    this.linkPlugin();
-  }
+    // If brand new setup, copy template files over
+    if (!fs.existsSync(this.buildPath)) {
+      this.copyTemplate();
+    }
 
-  copyTemplate(overwrite) {
-    fs.copySync(this.templatePath, this.buildPath);
-    this.loadBuildManifest();
+    // Manifest generation
+    this.loadManifest();
     this.generateMergedManifest();
+
+    // Icon generation
+    this.generateIcons();
+
+    // Symlinking - this may be overwritten in the subclass
+    this.linkPlugin();
+
+    // TODO - standard plugin file generation and watch
   }
 
-  get updatedManifestStructure() {
-    this.fatal('Platform subclass must implement manifestStructure.');
+  copyTemplate() {
+    if (fs.existsSync(this.buildPath)) {
+      this.warn('Attempted to copy plugin templates files to directory that already exists.');
+      return;
+    }
+
+    this.info('Creating new build with template files.')
+    fs.ensureDirSync(this.buildPath);
+    fs.copySync(this.templatePath, this.buildPath);
+  }
+
+  get mergedManifestStructure() {
+    this.fatal('Platform subclass must implement `mergedManifestStructure`.');
   }
 
   generateMergedManifest() {
     this.info(`Updating build manifest.`);
 
-    this.buildManifest = Object.assign(
-      this.buildManifest,
-      this.updatedManifestStructure
+    this.manifest = Object.assign(
+      this.manifest,
+      this.mergedManifestStructure
     );
   }
 
   async generateIcons() {
-    if (!this.buildManifest) {
-      this.fatal('Called generateIcons before build manifest was loaded.');
+    if (!this.manifest) {
+      this.fatal('Called `generateIcons` before build manifest was loaded.');
     }
 
     if (!this.plugin.manifest.icon || !this.iconSizes) { return }
@@ -123,55 +140,26 @@ class Platform {
     const sourceIconPath = path.join(this.plugin.outputPath, this.plugin.manifest.icon);
 
     await Promise.all(this.iconSizes.map((size) => {
-      const outputPath = `${this.buildAssetsPath}/icon-${size}.png`;
+      const outputPath = `${this.assetsPath}/icon-${size}.png`;
       return Jimp.read(sourceIconPath)
         .then(icon => icon.resize(size, size).write(outputPath));
     }));
   }
 
-  get symlinkName() {
-    if (!this.plugin || !this.plugin.manifest.name) {
-      this.fatal('Called symlinkName before plugin instance was loaded, or plugin manifest does not have a name!');
-    }
-
-    return this.plugin.manifest.name;
-  }
-
   linkPlugin() {
-    this.info(`Symlinking plugin directory.`);
+     this.info(`Symlinking plugin directory.`);
 
-    const symlinkPath = path.join(
-      this.pluginsPath,
-      this.symlinkName
-    )
+     const symlinkPath = path.join(
+       this.pluginsPath,
+       this.buildDirectory
+     )
 
-    if (fs.existsSync(symlinkPath)) {
-      return this.warn('Plugin directory already exists; skipping symlink. Delete the plugin first to recreate the symlink.');
-    }
+     if (fs.existsSync(symlinkPath)) {
+       return this.warn('Plugin directory already exists. Skipping symlink...');
+     }
 
-    fs.symlinkSync(this.buildPath, symlinkPath);
-
-    //  THIS DOES NOT WORK PROPERLY
-    //
-    //  this.info(`Symlinking plugin directory.`);
-    //
-    //  // Create the encompassing directory if it doesn't already exist
-    //  if (!fs.existsSync(path.join(this.pluginsPath, this.plugin.manifest.name))) {
-    //    fs.ensureDirSync(path.join(this.pluginsPath, this.plugin.manifest.name))
-    //  }
-    //
-    //  const symlinkPath = path.join(
-    //    this.pluginsPath,
-    //    this.plugin.manifest.name,
-    //    this.symlinkName
-    //  )
-    //
-    //  if (fs.existsSync(symlinkPath)) {
-    //    return this.warn('Plugin directory already exists; skipping symlink. Delete the plugin first to recreate the symlink.');
-    //  }
-    //
-    //  // Create the symlink within the encompassing directory
-    //  fs.symlinkSync(this.buildPath, symlinkPath);
+     // Create the symlink within the encompassing directory
+     fs.symlinkSync(this.buildPath, symlinkPath);
   }
 }
 

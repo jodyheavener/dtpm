@@ -4,21 +4,25 @@ const Platform = require('../platform');
 const { cleanObject, safeAccess } = require('../../utilities/objects');
 
 class Studio extends Platform {
-  constructor() {
-    super({
-      id: 'studio',
-      name: 'Studio',
-      iconSizes: [256]
-    });
+  get id() {
+    return 'studio';
+  }
+
+  get name() {
+    return 'Studio';
+  }
+
+  get iconSizes() {
+    return [256];
   }
 
   get pluginsPath() {
     return path.join(homeDir, '.invision-studio', 'plugins');
   }
 
-  get updatedManifestStructure() {
-    if (!this.plugin || !this.plugin.manifest) {
-      this.fatal('Cannot call updatedManifestStructure before calling setPlugin to load build manifest.');
+  get mergedManifestStructure() {
+    if (!this.plugin) {
+      this.fatal('Cannot call `mergedManifestStructure` before assigning Plugin instance.');
     }
 
     const manifest = this.plugin.manifest;

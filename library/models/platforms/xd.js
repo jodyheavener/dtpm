@@ -10,21 +10,27 @@ const xdPaths = {
 }
 
 class Xd extends Platform {
-  constructor() {
-    super({
-      id: 'xd',
-      name: 'Adobe XD',
-      iconSizes: [24, 48, 512]
-    });
+  get id() {
+    return 'xd';
+  }
+
+  get name() {
+    return 'Adobe XD';
+  }
+
+  get iconSizes() {
+    return [24, 48, 512];
   }
 
   get pluginsPath() {
+    // TODO: This only supports develop folder. Should
+    // optionally support proper plugin folder.
     return xdPaths[platform];
   }
 
-  get updatedManifestStructure() {
-    if (!this.plugin || !this.plugin.manifest) {
-      this.fatal('Cannot call updatedManifestStructure before calling setPlugin to load build manifest.');
+  get mergedManifestStructure() {
+    if (!this.plugin) {
+      this.fatal('Cannot call `mergedManifestStructure` before assigning Plugin instance.');
     }
 
     const manifest = this.plugin.manifest;
@@ -41,6 +47,11 @@ class Xd extends Platform {
       version: safeAccess(manifest, 'version'),
       uiEntryPoints: commands
     }, overrides));
+  }
+
+  linkPlugin() {
+    // TODO replace this with file copy, and make note that this is happening
+    this.info('Symlinking not supported.');
   }
 }
 

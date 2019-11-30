@@ -33,6 +33,10 @@ class Platform {
     this.fatal('Platform subclass must implement `pluginsPath`.');
   }
 
+  get jsEntryPath() {
+    this.fatal('Platform subclass must implement `jsEntryPath`.');
+  }
+
   get templatePath() {
     return path.join(__dirname, '../../', 'templates', this.id);
   }
@@ -70,7 +74,10 @@ class Platform {
       this.fatal(`Can't find plugin manifest file.`);
     }
 
-    this.manifestData = require(this.manifestPath);
+    this.manifestData = JSON.parse(fs.readFileSync(
+      this.manifestPath,
+      { encoding: 'utf8' }
+    ));
   }
 
   get manifest() {
@@ -95,13 +102,16 @@ class Platform {
     this.loadManifest();
     this.generateMergedManifest();
 
+    // JS entry generation
+    this.syncJsEntryFile();
+
     // Icon generation
     this.generateIcons();
 
     // Symlinking - this may be overwritten in the subclass
+    // Some platforms do not support symlinking, so it should
+    // instead implement copyPlugin to be called on file change
     this.linkPlugin();
-
-    // TODO - standard plugin file generation and watch
   }
 
   copyTemplate() {
@@ -133,33 +143,78 @@ class Platform {
       this.fatal('Called `generateIcons` before build manifest was loaded.');
     }
 
-    if (!this.plugin.manifest.icon || !this.iconSizes) { return }
+    if (!this.plugin.iconPath || !this.iconSizes) { return }
 
     this.info(`Generating icons.`);
 
-    const sourceIconPath = path.join(this.plugin.outputPath, this.plugin.manifest.icon);
-
     await Promise.all(this.iconSizes.map((size) => {
       const outputPath = `${this.assetsPath}/icon-${size}.png`;
-      return Jimp.read(sourceIconPath)
+      return Jimp.read(this.plugin.iconPath)
         .then(icon => icon.resize(size, size).write(outputPath));
     }));
   }
 
+  generateJsEntryFile() {
+    if (!this.plugin) {
+      this.fatal('Cannot call `generateJsEntryFile` before assigning Plugin instance.');
+    }
+
+    if (!fs.existsSync(this.jsEntryPath)) {
+      this.fatal(`Can't find plugin JS entry file.`);
+    }
+
+    this.info(`Generating JS entry file.`);
+
+    const jsEntryData = fs.readFileSync(
+      this.plugin.jsEntryPath,
+      { encoding: 'utf8' }
+    );
+
+    // Insert JS file manipulation here
+
+    fs.writeFileSync(this.jsEntryPath, jsEntryData);
+  }
+
   linkPlugin() {
-     this.info(`Symlinking plugin directory.`);
+    this.info(`Symlinking plugin directory.`);
 
-     const symlinkPath = path.join(
-       this.pluginsPath,
-       this.buildDirectory
-     )
+    const symlinkPath = path.join(
+      this.pluginsPath,
+      this.buildDirectory
+    )
 
-     if (fs.existsSync(symlinkPath)) {
-       return this.warn('Plugin directory already exists. Skipping symlink...');
-     }
+    if (fs.existsSync(symlinkPath)) {
+      return this.info('Plugin directory already exists. Skipping symlink.');
+    }
 
-     // Create the symlink within the encompassing directory
-     fs.symlinkSync(this.buildPath, symlinkPath);
+    // Create the symlink within the encompassing directory
+    fs.symlinkSync(this.buildPath, symlinkPath);
+  }
+
+  copyPlugin() {
+    // This method should be implemented on each platform
+    // that does not support symlinking. It will be called
+    // on initial build and on file changes when --watch is
+    // passed into the command
+  }
+
+  syncManifest() {
+    // Called on watch changes
+    this.loadManifest();
+    this.generateMergedManifest();
+    this.copyPlugin();
+  }
+
+  syncIcons() {
+    // Called on watch changes
+    this.generateJsEntryFile();
+    this.copyPlugin();
+  }
+
+  syncJsEntryFile() {
+    // Called on watch changes
+    this.generateJsEntryFile();
+    this.copyPlugin();
   }
 }
 

@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs-extra');
-const { fatal } = require('../utilities/messages');
+const watch = require('node-watch');
+const { fatal, warn } = require('../utilities/messages');
 
 class Plugin {
   constructor(outputPath, autoloadManifest = false) {
@@ -17,17 +18,47 @@ class Plugin {
     }
   }
 
-  loadManifest() {
-    this.manifestPath = `${this.outputPath}/manifest.json`;
+  get iconPath() {
+    if (!this.manifest || !this.outputPath) {
+      fatal('Can\'t determine plugin path without `manifest` and `outputPath`.');
+    }
 
+    if (!this.manifest.icon) { return; }
+
+    return path.join(this.outputPath, this.manifest.icon);
+  }
+
+  get jsEntryPath() {
+    return path.join(this.outputPath, 'index.js');
+  }
+
+  get manifestPath() {
+    return path.join(this.outputPath, 'manifest.json');
+  }
+
+  loadManifest() {
     if (!fs.existsSync(this.manifestPath)) {
       fatal(`Can't find plugins manifest file.`);
     }
 
-    this.manifestData = require(this.manifestPath);
+    this.manifestData = JSON.parse(fs.readFileSync(
+      this.manifestPath,
+      { encoding: 'utf8' }
+    ));
 
-    // TODO: Add manifest validation, warning if any critical
-    // fields are missing, such as name, ID, icon path, etc.
+    if (!this.manifestData.name) {
+      warn('Plugin manifest missing property `name`. Errors may occur.');
+    }
+
+    if (!this.manifestData.id) {
+      warn('Plugin manifest missing property `id`. Errors may occur.');
+    }
+
+    if (!this.manifestData.icon) {
+      warn('Plugin manifest missing property `icon`. Errors may occur.');
+    }
+
+    return this.manifestData;
   }
 
   get manifest() {
@@ -39,6 +70,20 @@ class Plugin {
 
     fs.writeJsonSync(this.manifestPath, this.manifestData, {
       spaces: 2
+    });
+  }
+
+  initWatch(platforms) {
+    watch(this.iconPath, () => {
+      platforms.forEach(p => p.syncIcons());
+    });
+
+    watch(this.jsEntryPath, () => {
+      platforms.forEach(p => p.syncJsEntryFile());
+    });
+
+    watch(this.manifestPath, () => {
+      platforms.forEach(p => p.syncManifest());
     });
   }
 }

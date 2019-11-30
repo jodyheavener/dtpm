@@ -34,7 +34,11 @@ class Sketch extends Platform {
   }
 
   get assetsPath() {
-    return path.join(this.buildPath, 'Contents', 'Resources')
+    return path.join(this.buildPath, 'Contents', 'Resources');
+  }
+
+  get jsEntryPath() {
+    return path.join(this.buildPath, 'Contents', 'Sketch', 'index.js');
   }
 
   get mergedManifestStructure() {
@@ -42,7 +46,7 @@ class Sketch extends Platform {
       this.fatal('Cannot call `mergedManifestStructure` before assigning Plugin instance.');
     }
 
-    const manifest = this.plugin.manifest;
+    const manifest = this.plugin.loadManifest();
     const overrides = safeAccess(manifest, 'manifests', 'sketch') || {};
     const commands = (manifest.commands || []).map(command => ({
       name: command.name,

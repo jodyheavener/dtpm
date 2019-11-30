@@ -1,3 +1,4 @@
+const path = require('path');
 const Platform = require('../platform');
 const { cleanObject, safeAccess } = require('../../utilities/objects');
 
@@ -10,8 +11,12 @@ class Figma extends Platform {
     return 'Figma';
   }
 
+  get jsEntryPath() {
+    return path.join(this.buildPath, 'index.js');
+  }
+
   generateIcons() {
-    this.info('Does not support plugin icons. Skipping...')
+    this.info('Does not support plugin icons. Skipping...');
   }
 
   get mergedManifestStructure() {
@@ -19,7 +24,7 @@ class Figma extends Platform {
       this.fatal('Cannot call `mergedManifestStructure` before assigning Plugin instance.');
     }
 
-    const manifest = this.plugin.manifest;
+    const manifest = this.plugin.loadManifest();
     const overrides = safeAccess(manifest, 'manifests', 'figma') || {};
     const commands = (manifest.commands || []).map(command => ({
       name: command.name,
@@ -34,7 +39,7 @@ class Figma extends Platform {
   }
 
   linkPlugin() {
-    this.warn('Symlinking not supported. Please manually load this plugin\'s manifest directly into Figma.');
+    this.warn('Symlinking not supported. Manually load this plugin\'s manifest directly into Figma.');
   }
 }
 

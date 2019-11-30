@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs-extra');
 const homeDir = require('os').homedir();
 const platform = require('../../utilities/platform');
 const Platform = require('../platform');
@@ -28,12 +29,16 @@ class Xd extends Platform {
     return xdPaths[platform];
   }
 
+  get jsEntryPath() {
+    return path.join(this.buildPath, 'main.js');
+  }
+
   get mergedManifestStructure() {
     if (!this.plugin) {
       this.fatal('Cannot call `mergedManifestStructure` before assigning Plugin instance.');
     }
 
-    const manifest = this.plugin.manifest;
+    const manifest = this.plugin.loadManifest();
     const overrides = safeAccess(manifest, 'manifests', 'xd') || {};
     const commands = (manifest.commands || []).map(command => ({
       type: 'menu',
@@ -49,9 +54,20 @@ class Xd extends Platform {
     }, overrides));
   }
 
+  copyPlugin() {
+    this.info(`Copying files to XD plugin directory.`);
+
+    fs.copySync(this.buildPath, path.join(
+      this.pluginsPath,
+      this.buildDirectory
+    ));
+  }
+
   linkPlugin() {
-    // TODO replace this with file copy, and make note that this is happening
-    this.info('Symlinking not supported.');
+    this.warn('Symlinking not supported. Instead, copying files to XD\'s plugins directory.');
+    this.warn('Run build command with --watch to copy files to plugin directory when they change.');
+
+    this.copyPlugin();
   }
 }
 

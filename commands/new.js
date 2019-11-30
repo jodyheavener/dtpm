@@ -5,11 +5,11 @@ const { parameterize } = require('../library/utilities/strings');
 const { intro, success, info, fatal } = require('../library/utilities/messages');
 
 const command = async (name, command) => {
+  intro(command);
+
   const { dir, platforms, force } = command;
   const directoryName = dir ? dir : parameterize(name);
   const plugin = new Plugin(path.join(process.cwd(), directoryName));
-
-  intro(command);
 
   if (fs.existsSync(plugin.outputPath)) {
     if (force) {
@@ -33,7 +33,7 @@ const command = async (name, command) => {
     platforms: platforms
   });
 
-  success(`Good to go!`);
+  success(`DTPM template for plugin "${name}" has been created.`);
 }
 
 module.exports = command;

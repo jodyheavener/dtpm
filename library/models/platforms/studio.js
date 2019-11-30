@@ -20,12 +20,16 @@ class Studio extends Platform {
     return path.join(homeDir, '.invision-studio', 'plugins');
   }
 
+  get jsEntryPath() {
+    return path.join(this.buildPath, 'index.js');
+  }
+
   get mergedManifestStructure() {
     if (!this.plugin) {
       this.fatal('Cannot call `mergedManifestStructure` before assigning Plugin instance.');
     }
 
-    const manifest = this.plugin.manifest;
+    const manifest = this.plugin.loadManifest();
     const overrides = safeAccess(manifest, 'manifests', 'studio') || {};
 
     return cleanObject(Object.assign({

@@ -6,7 +6,7 @@ const program = new commander.Command();
 
 program.version(package.version);
 
-// TODO: Add verbose option
+// TODO: add verbose option to output debug info
 
 program
   .command('new <name>')

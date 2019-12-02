@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs-extra');
 const Jimp = require('jimp');
+const rollup = require('rollup');
 const { fatal, info, success, warn } = require('../utilities/messages');
 
 class Platform {
@@ -33,12 +34,20 @@ class Platform {
     this.fatal('Platform subclass must implement `pluginsPath`.');
   }
 
+  get jsEntryFile() {
+    this.fatal('Platform subclass must implement `jsEntryFile`.');
+  }
+
   get jsEntryPath() {
     this.fatal('Platform subclass must implement `jsEntryPath`.');
   }
 
   get templatePath() {
     return path.join(__dirname, '../../', 'templates', this.id);
+  }
+
+  get bridgeFilePath() {
+    return path.join(__dirname, '../../', 'bridge-js', this.id, 'index.js');
   }
 
   get buildDirectory() {
@@ -96,6 +105,11 @@ class Platform {
     // If brand new setup, copy template files over
     if (!fs.existsSync(this.buildPath)) {
       this.copyTemplate();
+
+      // Symlinking - this may be overwritten in the subclass
+      // Some platforms do not support symlinking, so it should
+      // instead implement copyPlugin to be called on file change
+      this.linkPlugin();
     }
 
     // Manifest generation
@@ -103,15 +117,13 @@ class Platform {
     this.generateMergedManifest();
 
     // JS entry generation
-    this.syncJsEntryFile();
+    this.generateJsEntryFile();
 
     // Icon generation
     this.generateIcons();
 
-    // Symlinking - this may be overwritten in the subclass
-    // Some platforms do not support symlinking, so it should
-    // instead implement copyPlugin to be called on file change
-    this.linkPlugin();
+    // Copy plugin files
+    this.copyPlugin();
   }
 
   copyTemplate() {
@@ -154,25 +166,29 @@ class Platform {
     }));
   }
 
-  generateJsEntryFile() {
+  async generateJsEntryFile() {
     if (!this.plugin) {
       this.fatal('Cannot call `generateJsEntryFile` before assigning Plugin instance.');
     }
 
-    if (!fs.existsSync(this.jsEntryPath)) {
+    if (!fs.existsSync(path.join(this.jsEntryPath, this.jsEntryFile))) {
       this.fatal(`Can't find plugin JS entry file.`);
     }
 
     this.info(`Generating JS entry file.`);
 
-    const jsEntryData = fs.readFileSync(
-      this.plugin.jsEntryPath,
-      { encoding: 'utf8' }
-    );
+    // JS COMPILATION
+    const bundle = await rollup.rollup({
+      input: this.bridgeFilePath,
+      context: 'this'
+    });
 
-    // Insert JS file manipulation here
+    const { output } = await bundle.generate({
+      format: 'cjs'
+    });
 
-    fs.writeFileSync(this.jsEntryPath, jsEntryData);
+    const outputPath = path.join(this.jsEntryPath, this.jsEntryFile);
+    fs.writeFileSync(outputPath, output[0].code);
   }
 
   linkPlugin() {

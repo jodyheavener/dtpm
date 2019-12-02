@@ -15,11 +15,19 @@
     "studio",
     "figma"
   ],
+  "manifests": {
+    "studio": {
+      "tagline": "Only the best plugins."
+    }
+  },
   "commands": [
     {
-      "name": "Example Command",
-      "handler": "exampleCommand",
-      "shortcut": "ctrl shift e"
+      "name": "First command",
+      "handler": "firstCommand"
+    },
+    {
+      "name": "Second command",
+      "handler": "secondCommand"
     }
   ]
 }

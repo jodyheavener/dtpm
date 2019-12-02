@@ -8,9 +8,12 @@ const intro = function(command) {
   }
 }
 
-const fatal = function(message) {
+const fatal = function(message, exit = true) {
   console.log(chalk.red(message));
-  process.exit();
+
+  if (exit) {
+    process.exit();
+  }
 }
 
 const warn = function(message) {

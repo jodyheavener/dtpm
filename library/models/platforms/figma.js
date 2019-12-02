@@ -11,12 +11,16 @@ class Figma extends Platform {
     return 'Figma';
   }
 
+  get jsEntryFile() {
+    return 'index.js';
+  }
+
   get jsEntryPath() {
-    return path.join(this.buildPath, 'index.js');
+    return this.buildPath;
   }
 
   generateIcons() {
-    this.info('Does not support plugin icons. Skipping...');
+    this.info('Does not support plugin icons. Skipping.');
   }
 
   get mergedManifestStructure() {

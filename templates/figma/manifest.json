@@ -1,5 +1,4 @@
 {
   "api": "1.0.0",
-  "main": "index.js",
-  "ui": "index.html"
+  "main": "index.js"
 }

@@ -29,8 +29,12 @@ class Xd extends Platform {
     return xdPaths[platform];
   }
 
+  get jsEntryFile() {
+    return 'main.js';
+  }
+
   get jsEntryPath() {
-    return path.join(this.buildPath, 'main.js');
+    return this.buildPath;
   }
 
   get mergedManifestStructure() {
@@ -64,10 +68,8 @@ class Xd extends Platform {
   }
 
   linkPlugin() {
-    this.warn('Symlinking not supported. Instead, copying files to XD\'s plugins directory.');
+    this.warn('Symlinking not supported. Instead, we\'ll copy the files to XD\'s plugins directory.');
     this.warn('Run build command with --watch to copy files to plugin directory when they change.');
-
-    this.copyPlugin();
   }
 }
 

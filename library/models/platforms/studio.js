@@ -20,8 +20,12 @@ class Studio extends Platform {
     return path.join(homeDir, '.invision-studio', 'plugins');
   }
 
+  get jsEntryFile() {
+    return 'index.js';
+  }
+
   get jsEntryPath() {
-    return path.join(this.buildPath, 'index.js');
+    return this.buildPath;
   }
 
   get mergedManifestStructure() {

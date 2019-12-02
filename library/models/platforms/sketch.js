@@ -37,8 +37,12 @@ class Sketch extends Platform {
     return path.join(this.buildPath, 'Contents', 'Resources');
   }
 
+  get jsEntryFile() {
+    return 'index.js';
+  }
+
   get jsEntryPath() {
-    return path.join(this.buildPath, 'Contents', 'Sketch', 'index.js');
+    return path.join(this.buildPath, 'Contents', 'Sketch');
   }
 
   get mergedManifestStructure() {

@@ -15,6 +15,7 @@
     "url": "https://github.com/jodyheavener/dtpm/issues"
   },
   "dependencies": {
+    "@rollup/plugin-alias": "^2.2.0",
     "chalk": "^3.0.0",
     "commander": "^4.0.1",
     "fs-extra": "^8.1.0",

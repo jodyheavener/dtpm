@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const Jimp = require('jimp');
 const rollup = require('rollup');
+const alias = require('@rollup/plugin-alias');
 const { fatal, info, success, warn } = require('../utilities/messages');
 
 class Platform {
@@ -180,7 +181,14 @@ class Platform {
     // JS COMPILATION
     const bundle = await rollup.rollup({
       input: this.bridgeFilePath,
-      context: 'this'
+      context: 'this',
+      plugins: [
+        alias({
+          entries: {
+            'command-loader': this.plugin.jsEntryPath
+          }
+        })
+      ]
     });
 
     const { output } = await bundle.generate({

@@ -1,4 +1,4 @@
-const commaList = function(value, _) {
+function commaList(value, _) {
   return value.split(',').map(v => v.trim());
 }
 

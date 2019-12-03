@@ -1,11 +1,11 @@
 {
   "name": "dtpm",
   "version": "0.1.0",
-  "description": "Build plugins for multiple design tools using one common API",
+  "description": "Code one plugin for multiple design tools",
   "main": "index.js",
   "bin": "index.js",
   "author": "Jody Heavener <j.heavener@gmail.com>",
-  "license": "Apache-2.0",
+  "license": "Copyright 2019-2020 Jody Heavener",
   "homepage": "https://github.com/jodyheavener/dtpm",
   "repository": {
     "type": "git",
@@ -25,5 +25,6 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
-  }
+  },
+  "private": true
 }

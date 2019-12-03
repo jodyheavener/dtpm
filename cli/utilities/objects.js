@@ -1,4 +1,4 @@
-const cleanObject = function(uncleanedObject) {
+function cleanObject(uncleanedObject) {
   let cleanedObject = {};
 
   Object.keys(uncleanedObject).forEach((key) => {
@@ -12,7 +12,7 @@ const cleanObject = function(uncleanedObject) {
   return cleanedObject;
 }
 
-const safeAccess = function(obj, ...stackItems) {
+function safeAccess(obj, ...stackItems) {
   let base = obj;
 
   const stackValid = stackItems.every((item) => {

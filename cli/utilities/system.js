@@ -1,4 +1,7 @@
 const process = require('process');
+const os = require('os');
+
+const homeDir = os.homedir();
 
 let platform;
 switch(process.platform) {
@@ -14,4 +17,7 @@ if (!platform) {
   console.warn('Unsupported platform detected.')
 }
 
-module.exports = platform;
+module.exports = {
+  platform,
+  homeDir
+}

@@ -1,8 +1,7 @@
 const path = require('path');
 const fs = require('fs-extra');
-const homeDir = require('os').homedir();
-const platform = require('../../utilities/platform');
 const Platform = require('../platform');
+const { platform, homeDir } = require('../../utilities/system');
 const { cleanObject, safeAccess } = require('../../utilities/objects');
 
 const xdPaths = {

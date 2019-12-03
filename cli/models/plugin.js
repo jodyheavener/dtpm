@@ -8,9 +8,9 @@ class Plugin {
     this.outputPath = outputPath;
     this.templatePath = path.join(
       __dirname,
-      '../../',
+      '../',
       'templates',
-      'plugin'
+      'source-plugin'
     );
 
     if (autoloadManifest) {

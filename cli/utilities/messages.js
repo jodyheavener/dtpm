@@ -1,6 +1,6 @@
 const chalk = require('chalk');
 
-const intro = function(command) {
+function intro(command) {
   console.log(chalk.bold.black.bgWhite(` === DTPM v${command.parent._version} === \r\r`));
 
   if (command.force) {
@@ -8,7 +8,7 @@ const intro = function(command) {
   }
 }
 
-const fatal = function(message, exit = true) {
+function fatal(message, exit = true) {
   console.log(chalk.red(message));
 
   if (exit) {
@@ -16,15 +16,15 @@ const fatal = function(message, exit = true) {
   }
 }
 
-const warn = function(message) {
+function warn(message) {
   console.log(chalk.yellow(message));
 }
 
-const info = function(message) {
+function info(message) {
   console.log(chalk.white(message));
 }
 
-const success = function(message) {
+function success(message) {
   console.log(chalk.green(message));
 }
 

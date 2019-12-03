@@ -1,26 +1,26 @@
 const commander = require('commander');
+const { platformKeys } = require('./cli/utilities/constants');
+const { commaList } = require('./cli/utilities/commands');
+const newCommand = require('./cli/commands/new');
+const buildCommand = require('./cli/commands/build');
 const package = require('./package.json');
-const { platformKeys } = require('./library/constants');
-const { commaList } = require('./library/utilities/commands');
 const program = new commander.Command();
 
 program.version(package.version);
-
-// TODO: add verbose option to output debug info
 
 program
   .command('new <name>')
   .option('-d, --dir <value>', 'Directory to create the files in, defaults to sanitized name')
   .option('-p, --platforms <items>', 'Comma-separated list of platform to generate files for', commaList, platformKeys)
   .option('-f, --force', 'Force overwrite of existing directory, if one exists')
-  .description('Create a new set of DTPM plugins')
-  .action(require('./commands/new'));
+  .description('Set up a new boilerplate for building dtpm plugins')
+  .action(newCommand);
 
 program
   .command('build')
-  .option('-w, --watch', 'Watch for changes to plugin files and recompile')
-  .description('Build plugin files to platform plugins')
-  .action(require('./commands/build'));
+  .option('-w, --watch', 'Watch for changes to source plugin files and recompile')
+  .description('Build source plugin files to platform plugins')
+  .action(buildCommand);
 
 program.parse(process.argv);
 

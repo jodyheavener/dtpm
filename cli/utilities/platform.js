@@ -14,4 +14,6 @@ if (!platform) {
   console.warn('Unsupported platform detected.')
 }
 
-module.exports = platform;
+module.exports = {
+  platform
+}

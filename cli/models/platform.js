@@ -44,7 +44,7 @@ class Platform {
   }
 
   get templatePath() {
-    return path.join(__dirname, '../../', 'templates', this.id);
+    return path.join(__dirname, '../../', 'cli', 'templates', this.id);
   }
 
   get bridgePath() {

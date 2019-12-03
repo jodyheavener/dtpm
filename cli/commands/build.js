@@ -1,8 +1,8 @@
-const Plugin = require('../library/models/plugin');
-const { platforms: availablePlatforms } = require('../library/constants');
-const { intro, info, success } = require('../library/utilities/messages');
+const Plugin = require('../models/plugin');
+const { platforms: availablePlatforms } = require('../utilities/constants');
+const { intro, info, success } = require('../utilities/messages');
 
-const command = async (command) => {
+async function buildCommand(command) {
   intro(command);
 
   const { watch } = command;
@@ -31,4 +31,4 @@ const command = async (command) => {
   }
 }
 
-module.exports = command;
+module.exports = buildCommand;

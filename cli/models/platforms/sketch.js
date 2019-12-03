@@ -1,8 +1,10 @@
 const fs = require('fs-extra');
 const path = require('path');
-const homeDir = require('os').homedir();
+const os = require('os');
 const Platform = require('../platform');
 const { cleanObject, safeAccess } = require('../../utilities/objects');
+
+const homeDir = os.homedir();
 
 class Sketch extends Platform {
   get id() {

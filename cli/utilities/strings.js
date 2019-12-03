@@ -1,4 +1,4 @@
-const parameterize = function(value) {
+function parameterize(value) {
   return value.toLowerCase().replace(/ /g, '-');
 }
 

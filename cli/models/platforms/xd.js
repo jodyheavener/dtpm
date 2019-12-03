@@ -1,10 +1,11 @@
 const path = require('path');
 const fs = require('fs-extra');
-const homeDir = require('os').homedir();
+const os = require('os');
 const platform = require('../../utilities/platform');
 const Platform = require('../platform');
 const { cleanObject, safeAccess } = require('../../utilities/objects');
 
+const homeDir = os.homedir();
 const xdPaths = {
   mac: path.join(homeDir, 'Library', 'Application Support', 'Adobe', 'Adobe XD', 'develop'),
   win: path.join(homeDir, 'AppData', 'Local', 'Packages', 'Adobe.CC.XD_adky2gkssdxte', 'LocalState', 'develop')

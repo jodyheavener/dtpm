@@ -188,7 +188,14 @@ class Platform {
             'command-loader': this.plugin.jsEntryPath
           }
         })
-      ]
+      ],
+      onwarn(warning, warn) {
+        // ignore empty chunk warning
+        if (warning.code === 'EMPTY_BUNDLE') return;
+
+        // Use default for everything else
+        warn(warning);
+      }
     });
 
     const { output } = await bundle.generate({

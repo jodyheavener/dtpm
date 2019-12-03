@@ -12,14 +12,8 @@
   "platforms": [
     "xd",
     "sketch",
-    "studio",
     "figma"
   ],
-  "manifests": {
-    "studio": {
-      "tagline": "Only the best plugins."
-    }
-  },
   "commands": [
     {
       "name": "First command",

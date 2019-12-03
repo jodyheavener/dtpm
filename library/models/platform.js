@@ -47,8 +47,8 @@ class Platform {
     return path.join(__dirname, '../../', 'templates', this.id);
   }
 
-  get bridgeFilePath() {
-    return path.join(__dirname, '../../', 'bridge-js', this.id, 'index.js');
+  get bridgePath() {
+    return path.join(__dirname, '../../', 'bridge-js', this.id);
   }
 
   get buildDirectory() {
@@ -180,12 +180,13 @@ class Platform {
 
     // JS COMPILATION
     const bundle = await rollup.rollup({
-      input: this.bridgeFilePath,
+      input: path.join(this.bridgePath, 'entry.js'),
       context: 'this',
       plugins: [
         alias({
           entries: {
-            'command-loader': this.plugin.jsEntryPath
+            'command-loader': this.plugin.jsEntryPath,
+            'dtpm': this.bridgePath
           }
         })
       ],

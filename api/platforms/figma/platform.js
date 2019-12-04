@@ -1,3 +1,3 @@
-export function example() {
-  console.log('example');
-}
+import { example } from 'dtpm-core/platform';
+
+export { example };

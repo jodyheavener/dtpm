@@ -25,11 +25,11 @@ class Sketch extends Platform {
     return `${this.plugin.manifest.name}.sketchplugin`;
   }
 
-  get pluginsPath() {
+  get platformPluginsPath() {
     return path.join(homeDir, 'Library', 'Application Support', 'com.bohemiancoding.sketch3', 'Plugins');
   }
 
-  get manifestPath() {
+  get manifestFilePath() {
     return path.join(this.buildPath, 'Contents', 'Sketch', 'manifest.json');
   }
 
@@ -37,11 +37,7 @@ class Sketch extends Platform {
     return path.join(this.buildPath, 'Contents', 'Resources');
   }
 
-  get jsEntryFile() {
-    return 'index.js';
-  }
-
-  get jsEntryPath() {
+  get entryPath() {
     return path.join(this.buildPath, 'Contents', 'Sketch');
   }
 

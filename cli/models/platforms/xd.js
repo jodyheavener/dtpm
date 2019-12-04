@@ -22,18 +22,14 @@ class Xd extends Platform {
     return [24, 48, 512];
   }
 
-  get pluginsPath() {
+  get platformPluginsPath() {
     // TODO: This only supports develop folder. Should
     // optionally support proper plugin folder.
     return xdPaths[platform];
   }
 
-  get jsEntryFile() {
+  get entryFileName() {
     return 'main.js';
-  }
-
-  get jsEntryPath() {
-    return this.buildPath;
   }
 
   get mergedManifestStructure() {
@@ -61,7 +57,7 @@ class Xd extends Platform {
     this.info(`Copying files to XD plugin directory.`);
 
     fs.copySync(this.buildPath, path.join(
-      this.pluginsPath,
+      this.platformPluginsPath,
       this.buildDirectory
     ));
   }

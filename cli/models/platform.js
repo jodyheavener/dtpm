@@ -1,4 +1,4 @@
-const path = require('path');
+const { join } = require('path');
 const fs = require('fs-extra');
 const Jimp = require('jimp');
 const rollup = require('rollup');
@@ -10,14 +10,6 @@ class Platform {
   fatal(message) { return fatal(`[${this.name}] ${message}`); }
   warn(message) { return warn(`[${this.name}] ${message}`); }
   info(message) { return info(`[${this.name}] ${message}`); }
-
-  setPlugin(pluginInstance) {
-    this.plugin = pluginInstance;
-  }
-
-  setCommand(commandInstance) {
-    this.command = commandInstance;
-  }
 
   get id() {
     this.fatal('Platform subclass must implement `id`.');
@@ -31,24 +23,12 @@ class Platform {
     this.fatal('Platform subclass must implement `iconSizes`.');
   }
 
-  get pluginsPath() {
-    this.fatal('Platform subclass must implement `pluginsPath`.');
+  get platformPluginsPath() {
+    this.fatal('Platform subclass must implement `platformPluginsPath`.');
   }
 
-  get jsEntryFile() {
-    this.fatal('Platform subclass must implement `jsEntryFile`.');
-  }
-
-  get jsEntryPath() {
-    this.fatal('Platform subclass must implement `jsEntryPath`.');
-  }
-
-  get templatePath() {
-    return path.join(__dirname, '../../', 'cli', 'templates', this.id);
-  }
-
-  get bridgePath() {
-    return path.join(__dirname, '../../', 'api', 'platforms', this.id);
+  get mergedManifestStructure() {
+    this.fatal('Platform subclass must implement `mergedManifestStructure`.');
   }
 
   get buildDirectory() {
@@ -64,30 +44,39 @@ class Platform {
       this.fatal('Cannot call `buildPath` before assigning Plugin instance.');
     }
 
-    return path.join(this.plugin.outputPath, 'build', this.id, this.buildDirectory);
+    return join(this.plugin.sourcePath, 'build', this.id, this.buildDirectory);
   }
 
-  get manifestPath() {
-    return path.join(this.buildPath, 'manifest.json');
+  get entryFileName() {
+    return 'index.js';
+  }
+
+  get entryPath() {
+    return this.buildPath;
+  }
+
+  get entryFilePath() {
+    return join(this.entryPath, this.entryFileName);
+  }
+
+  get templatePath() {
+    return join(__dirname, '../../', 'cli', 'templates', this.id);
+  }
+
+  get apiCorePath() {
+    return join(__dirname, '../../', 'api', 'core');
+  }
+
+  get apiPath() {
+    return join(__dirname, '../../', 'api', 'platforms', this.id);
+  }
+
+  get manifestFilePath() {
+    return join(this.buildPath, 'manifest.json');
   }
 
   get assetsPath() {
-    return path.join(this.buildPath, 'assets');
-  }
-
-  loadManifest() {
-    if (!this.plugin) {
-      this.fatal('Cannot call `loadManifest` before assigning Plugin instance.');
-    }
-
-    if (!fs.existsSync(this.manifestPath)) {
-      this.fatal(`Can't find plugin manifest file.`);
-    }
-
-    this.manifestData = JSON.parse(fs.readFileSync(
-      this.manifestPath,
-      { encoding: 'utf8' }
-    ));
+    return join(this.buildPath, 'assets');
   }
 
   get manifest() {
@@ -97,9 +86,32 @@ class Platform {
   set manifest(value) {
     this.manifestData = value;
 
-    fs.writeJsonSync(this.manifestPath, this.manifestData, {
+    fs.writeJsonSync(this.manifestFilePath, this.manifestData, {
       spaces: 2
     });
+  }
+
+  setPlugin(pluginInstance) {
+    this.plugin = pluginInstance;
+  }
+
+  setCommand(commandInstance) {
+    this.command = commandInstance;
+  }
+
+  loadManifest() {
+    if (!this.plugin) {
+      this.fatal('Cannot call `loadManifest` before assigning Plugin instance.');
+    }
+
+    if (!fs.existsSync(this.manifestFilePath)) {
+      this.fatal(`Can't find plugin manifest file.`);
+    }
+
+    this.manifestData = JSON.parse(fs.readFileSync(
+      this.manifestFilePath,
+      { encoding: 'utf8' }
+    ));
   }
 
   build() {
@@ -118,7 +130,7 @@ class Platform {
     this.generateMergedManifest();
 
     // JS entry generation
-    this.generateJsEntryFile();
+    this.generateEntryFile();
 
     // Icon generation
     this.generateIcons();
@@ -138,10 +150,6 @@ class Platform {
     fs.copySync(this.templatePath, this.buildPath);
   }
 
-  get mergedManifestStructure() {
-    this.fatal('Platform subclass must implement `mergedManifestStructure`.');
-  }
-
   generateMergedManifest() {
     this.info(`Updating build manifest.`);
 
@@ -156,37 +164,37 @@ class Platform {
       this.fatal('Called `generateIcons` before build manifest was loaded.');
     }
 
-    if (!this.plugin.iconPath || !this.iconSizes) { return }
+    if (!this.plugin.iconFilePath || !this.iconSizes) { return }
 
     this.info(`Generating icons.`);
 
     await Promise.all(this.iconSizes.map((size) => {
       const outputPath = `${this.assetsPath}/icon-${size}.png`;
-      return Jimp.read(this.plugin.iconPath)
+      return Jimp.read(this.plugin.iconFilePath)
         .then(icon => icon.resize(size, size).write(outputPath));
     }));
   }
 
-  async generateJsEntryFile() {
+  async generateEntryFile() {
     if (!this.plugin) {
-      this.fatal('Cannot call `generateJsEntryFile` before assigning Plugin instance.');
+      this.fatal('Cannot call `generateEntryFile` before assigning Plugin instance.');
     }
 
-    if (!fs.existsSync(path.join(this.jsEntryPath, this.jsEntryFile))) {
-      this.fatal(`Can't find plugin JS entry file.`);
+    if (!fs.existsSync(this.entryFilePath)) {
+      this.fatal(`Can't find platform plugin JS entry file.`);
     }
 
     this.info(`Generating JS entry file.`);
 
-    // JS COMPILATION
     const bundle = await rollup.rollup({
-      input: path.join(this.bridgePath, 'entry.js'),
+      input: join(this.apiPath, 'entry.js'),
       context: 'this',
       plugins: [
         alias({
           entries: {
-            'command-loader': this.plugin.jsEntryPath,
-            'dtpm': this.bridgePath
+            'command-loader': this.plugin.entryFilePath,
+            'dtpm-core': this.apiCorePath,
+            'dtpm': this.apiPath
           }
         })
       ],
@@ -203,15 +211,14 @@ class Platform {
       format: 'cjs'
     });
 
-    const outputPath = path.join(this.jsEntryPath, this.jsEntryFile);
-    fs.writeFileSync(outputPath, output[0].code);
+    fs.writeFileSync(this.entryFilePath, output[0].code);
   }
 
   linkPlugin() {
     this.info(`Symlinking plugin directory.`);
 
-    const symlinkPath = path.join(
-      this.pluginsPath,
+    const symlinkPath = join(
+      this.platformPluginsPath,
       this.buildDirectory
     )
 
@@ -239,13 +246,13 @@ class Platform {
 
   syncIcons() {
     // Called on watch changes
-    this.generateJsEntryFile();
+    this.generateEntryFile();
     this.copyPlugin();
   }
 
-  syncJsEntryFile() {
+  syncEntryFile() {
     // Called on watch changes
-    this.generateJsEntryFile();
+    this.generateEntryFile();
     this.copyPlugin();
   }
 }

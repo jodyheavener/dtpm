@@ -11,14 +11,6 @@ class Figma extends Platform {
     return 'Figma';
   }
 
-  get jsEntryFile() {
-    return 'index.js';
-  }
-
-  get jsEntryPath() {
-    return this.buildPath;
-  }
-
   generateIcons() {
     this.info('Does not support plugin icons. Skipping.');
   }

@@ -1,5 +1,6 @@
 const process = require('process');
 const os = require('os');
+const { warn } = require('./messages');
 
 const homeDir = os.homedir();
 
@@ -14,7 +15,7 @@ switch(process.platform) {
 }
 
 if (!platform) {
-  console.warn('Unsupported platform detected.')
+  warn('Unsupported platform detected. Errors may occur.')
 }
 
 module.exports = {

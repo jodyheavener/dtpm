@@ -1,10 +1,10 @@
-const path = require('path');
+const { join } = require('path');
 const fs = require('fs-extra');
 
-const platformFilesPath = path.join(__dirname, '../', 'models', 'platforms');
+const platformFilesPath = join(__dirname, '../', 'models', 'platforms');
 
 const platforms = fs.readdirSync(platformFilesPath).map((file) => {
-  const platform = require(path.join(platformFilesPath, file));
+  const platform = require(join(platformFilesPath, file));
   return new platform();
 });
 

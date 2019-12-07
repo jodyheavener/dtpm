@@ -79,9 +79,11 @@ class Plugin {
       platforms.forEach(platform => platform.syncEntryFile());
     });
 
-    watch(this.manifestFilePath, () => {
-      platforms.forEach(platform => platform.syncManifest());
-    });
+    // Disabling this for now. It's causing issues.
+    //
+    // watch(this.manifestFilePath, () => {
+    //   platforms.forEach(platform => platform.syncManifest());
+    // });
   }
 }
 

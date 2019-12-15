@@ -1,12 +1,12 @@
-import document from 'dtpm-core/document';
 import {
-  // selection
+  // selection,
 } from 'dtpm-core/document';
 
 function selection() {
-  const { selection } = require("scenegraph");
+  const { selection } = require('scenegraph');
   return selection;
-}
+};
 
-export default document;
-export { selection };
+export {
+  selection,
+};

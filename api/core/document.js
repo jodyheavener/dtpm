@@ -1,9 +1,7 @@
-export function selection() {
+function selection() {
   throw 'document.selection is not implemented';
 };
 
-const document = {
-  selection
+export {
+  selection,
 };
-
-export default document;

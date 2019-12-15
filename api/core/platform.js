@@ -1,9 +1,7 @@
-export const id = null;
-export const name = null;
+const id = null;
+const name = null;
 
-const platform = {
+export {
   id,
-  name
-};
-
-export default platform;
+  name,
+}

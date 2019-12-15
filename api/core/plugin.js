@@ -1,9 +1,18 @@
-export function done() {
-  // noop
+function done() {
+  /* noop */
 };
 
-const plugin = {
-  done
+const storage = {
+  get() {
+    throw 'plugin.storage.get is not implemented';
+  },
+
+  set() {
+    throw 'plugin.storage.set is not implemented';
+  }
 };
 
-export default plugin;
+export {
+  done,
+  storage,
+};

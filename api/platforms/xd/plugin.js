@@ -1,7 +1,9 @@
-import plugin from 'dtpm-core/plugin';
 import {
-  done
+  done,
+  storage,
 } from 'dtpm-core/plugin';
 
-export default plugin;
-export { done };
+export {
+  done,
+  storage,
+};

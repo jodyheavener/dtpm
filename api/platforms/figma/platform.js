@@ -1,11 +1,12 @@
-import platform from 'dtpm-core/platform';
 import {
   // id,
-  // name
+  // name,
 } from 'dtpm-core/platform';
 
 const id = 'figma';
 const name = 'Figma';
 
-export default platform;
-export { id, name };
+export {
+  id,
+  name,
+}

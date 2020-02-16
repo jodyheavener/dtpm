@@ -1,0 +1,15 @@
+{
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaVersion": 2017
+  },
+  "rules": {
+    "no-console": "error",
+    "strict": "error",
+    "array-callback-return": "error",
+    "block-scoped-var": "error",
+    "no-unused-vars": "error",
+    "no-extra-bind": "error",
+    "no-trailing-spaces": "error"
+  }
+}

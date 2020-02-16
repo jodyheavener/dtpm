@@ -1,4 +1,3 @@
-const path = require('path');
 const Platform = require('../platform');
 const { cleanObject, safeAccess } = require('../../utilities/objects');
 

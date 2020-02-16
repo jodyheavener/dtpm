@@ -1,12 +1,14 @@
+#!/usr/bin/env node
+
 const commander = require('commander');
 const { platformKeys } = require('./cli/utilities/constants');
 const { commaList } = require('./cli/utilities/commands');
 const newCommand = require('./cli/commands/new');
 const buildCommand = require('./cli/commands/build');
-const package = require('./package.json');
+const pckg = require('./package.json');
 const program = new commander.Command();
 
-program.version(package.version);
+program.version(pckg.version);
 
 program
   .command('new <name>')

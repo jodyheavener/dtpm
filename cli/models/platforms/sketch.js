@@ -1,4 +1,3 @@
-const fs = require('fs-extra');
 const path = require('path');
 const Platform = require('../platform');
 const { homeDir } = require('../../utilities/system');

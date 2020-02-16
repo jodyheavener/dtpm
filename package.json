@@ -2,10 +2,15 @@
   "name": "dtpm",
   "version": "0.1.0",
   "description": "Code one plugin for multiple design tools",
-  "main": "index.js",
-  "bin": "index.js",
+  "main": "./index.js",
+  "bin": {
+    "dtpm": "./index.js"
+  },
+  "engines": {
+    "node": ">=10"
+  },
   "author": "Jody Heavener <j.heavener@gmail.com>",
-  "license": "Copyright 2019-2020 Jody Heavener",
+  "license": "MIT",
   "homepage": "https://github.com/jodyheavener/dtpm",
   "repository": {
     "type": "git",
@@ -13,6 +18,9 @@
   },
   "bugs": {
     "url": "https://github.com/jodyheavener/dtpm/issues"
+  },
+  "scripts": {
+    "lint": "eslint . --ext .js"
   },
   "dependencies": {
     "@rollup/plugin-alias": "^2.2.0",
@@ -23,7 +31,7 @@
     "node-watch": "^0.6.3",
     "rollup": "^1.27.7"
   },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
+  "devDependencies": {
+    "eslint": "^6.8.0"
   }
 }

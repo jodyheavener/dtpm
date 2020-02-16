@@ -1,7 +1,4 @@
-import {
-  // done,
-  // storage,
-} from 'dtpm-core/plugin';
+import { /* done, */ /* storage, */ } from 'dtpm-core/plugin';
 
 function done() {
   figma.closePlugin();

@@ -1,6 +1,5 @@
-import {
-  // selection,
-} from 'dtpm-core/document';
+import { /* selection, */ } from 'dtpm-core/document';
+import { Rectangle } from './lib/nodes';
 
 function selection() {
   const { selection } = require('scenegraph');
@@ -9,4 +8,5 @@ function selection() {
 
 export {
   selection,
+  Rectangle,
 };

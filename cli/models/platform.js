@@ -200,7 +200,9 @@ class Platform {
       ],
       external: [
         // TODO: find a better way to handle this
-        'sketch/settings'
+        'sketch/settings',
+        'sketch/dom',
+        'scenegraph'
       ],
       onwarn(warning, warn) {
         // ignore empty chunk warning

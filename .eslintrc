@@ -10,6 +10,6 @@
     "block-scoped-var": "error",
     "no-unused-vars": "error",
     "no-extra-bind": "error",
-    "no-trailing-spaces": "error"
+    "no-trailing-spaces": "error",
   }
 }

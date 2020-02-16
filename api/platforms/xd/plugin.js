@@ -1,9 +1,5 @@
 import storageHelper from './lib/storage';
-
-import {
-  done,
-  // storage,
-} from 'dtpm-core/plugin';
+import { done, /* storage, */ } from 'dtpm-core/plugin';
 
 const storage = {
   get(key) {

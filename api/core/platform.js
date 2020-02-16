@@ -3,5 +3,5 @@ const name = null;
 
 export {
   id,
-  name,
+  name
 }

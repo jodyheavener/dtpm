@@ -126,7 +126,7 @@ All about the plugin instance.
 **Available properties and methods:**
 
 - `done` (function) - Used to mark that the plugin is done being used and can be released
-- `storage` (function) - Used to get and set data in the plugin (this is not done)
+- `storage` (object) - Used to `get(k)` and `set(k, v)` data in the plugin. Both functions return a promise.
 
 ### `dtpm/document`
 
@@ -144,8 +144,20 @@ Here's a super simple example of how you can work with the DTPM API:
 // index.js
 
 import { selection } from 'dtpm/document';
+import { storage, done } from 'dtpm/plugin';
 
-export function firstCommand() {
+export async function firstCommand() {
+  // Log the current document selection
   console.log(selection);
+
+  // Set and get a storage value
+  const storageKey = 'example';
+  await storage.set(storageKey, 'hey');
+  const retrievedValue = await storage.get(storageKey);
+
+  console.log(retrievedValue);
+
+  // Signal that the plugin is done running
+  done();
 }
 ```

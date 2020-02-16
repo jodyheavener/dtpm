@@ -1,6 +1,6 @@
 {
   "name": "dtpm",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Code one plugin for multiple design tools",
   "main": "./index.js",
   "bin": {

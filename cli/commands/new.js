@@ -11,16 +11,16 @@ async function newCommand(name, command) {
   const directoryName = dir ? dir : parameterize(name);
   const plugin = new Plugin(path.join(process.cwd(), directoryName));
 
-  if (fs.existsSync(plugin.outputPath)) {
+  if (fs.existsSync(plugin.sourcePath)) {
     if (force) {
-      fs.removeSync(plugin.outputPath);
+      fs.removeSync(plugin.sourcePath);
     } else {
       fatal(`Directory '${directoryName}' already exists. Re-run with --force to overwrite.`);
     }
   }
 
-  fs.mkdirSync(plugin.outputPath);
-  fs.copySync(plugin.templatePath, plugin.outputPath);
+  fs.mkdirSync(plugin.sourcePath);
+  fs.copySync(plugin.templatePath, plugin.sourcePath);
 
   plugin.loadManifest();
   plugin.manifest = Object.assign(plugin.manifest, {

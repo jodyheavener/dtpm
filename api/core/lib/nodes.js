@@ -12,8 +12,11 @@ class Node {
 
     this.supportsFills = false;
     this.supportsMultipleFills = true;
-    this._fills = [];
-    this.fills = args.fills || args.fill;
+    this._fills = args.fills || args.fill || [];
+  }
+
+  get fills() {
+    return this._fills;
   }
 
   set fill(fillElement) {
@@ -30,14 +33,6 @@ class Node {
     }
 
     this._fills = fillElements;
-  }
-
-  get fills() {
-    if (!this.supportsMultipleFills) {
-      return fill[0];
-    }
-
-    return fills;
   }
 
   get nativeObject() {

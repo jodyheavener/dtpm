@@ -1,15 +1,16 @@
 import { Rectangle as CoreRectangle } from 'dtpm-core/document';
+import { Fill } from './styles';
 
 class Rectangle extends CoreRectangle {
   constructor(args = {}) {
     super(args);
   }
 
-  nativeObject() {
+  native() {
     let object = figma.createRectangle();
     object.name = this.name;
-    object.width = this.width;
-    object.height = this.height;
+    object.resize(this.width, this.height);
+    object.fills = this.fills.map((fill) => (new Fill(fill).native()));
 
     return object;
   }

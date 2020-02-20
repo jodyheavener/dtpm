@@ -3,7 +3,7 @@ class Node {
 
   constructor(args = {}) {
     if (!args.name) {
-      throw(new Error(`${this.nodeType} requires a name`));
+      throw(new Error(`Node of type "${this.nodeType}" requires "name" property`));
     }
 
     this.name = args.name;
@@ -12,7 +12,22 @@ class Node {
 
     this.supportsFills = false;
     this.supportsMultipleFills = true;
-    this._fills = args.fills || args.fill || [];
+
+    if (args.fills) {
+      if (!this.supportsFills) {
+        throw(new Error(`${this.nodeType} does not support multiple fills`));
+      }
+
+      this._fills = args.fills
+    } else if (args.fill) {
+      this._fills = [args.fill];
+    } else {
+      this._fills = [];
+    }
+  }
+
+  get fill() {
+    return this._fills[0];
   }
 
   get fills() {
@@ -20,23 +35,19 @@ class Node {
   }
 
   set fill(fillElement) {
-    this.fills = fillElement;
+    this._fills = [fillElement];
   }
 
   set fills(fillElements = []) {
     if (!this.supportsFills) {
-      throw(new Error(`${this.nodeType} does not support fills`));
-    }
-
-    if (!Array.isArray(fillElements)) {
-      fillElements = [fillElements];
+      throw(new Error(`${this.nodeType} does not support multiple fills`));
     }
 
     this._fills = fillElements;
   }
 
-  get nativeObject() {
-    throw(new Error(`Platform-specific ${this.nodeType} subclass must implement nativeObject`));
+  get native() {
+    throw(new Error(`Platform-specific Node of type "${this.nodeType}" must implement "native"`));
   }
 }
 

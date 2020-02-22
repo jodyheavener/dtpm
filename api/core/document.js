@@ -1,15 +1,11 @@
 import { Node, Rectangle } from './lib/nodes';
-import { Fill } from './lib/styles';
-import { default as Color } from './lib/color';
 
-function selection() {
-  throw 'document.selection is not implemented';
-};
+function insert() {
+  throw 'document.insert is not implemented';
+}
 
 export {
-  selection,
+  insert,
   Node,
   Rectangle,
-  Fill,
-  Color,
 };

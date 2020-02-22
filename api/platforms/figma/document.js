@@ -1,13 +1,11 @@
-import { /* selection, */ } from 'dtpm-core/document';
+import { /* insert, */ } from 'dtpm-core/document';
 import { Rectangle } from './lib/nodes';
-import { Fill } from './lib/styles';
 
-function selection() {
-  return figma.currentPage.selection;
-};
+function insert(object) {
+  object.native(); // Figma inserts the layer on creation
+}
 
 export {
-  selection,
+  insert,
   Rectangle,
-  Fill,
 };

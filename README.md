@@ -116,8 +116,13 @@ All about the platform you're working in.
 
 **Available properties and methods:**
 
-- `id` (string) - The platform's simple ID (e.g. `sketch`)
-- `name` (string) - The platform's full name (e.g. `Adobe XD`)
+#### `id`
+
+String - The platform's simple ID (e.g. `sketch`)
+
+#### `name`
+
+String - The platform's full name (e.g. `Adobe XD`)
 
 ### `dtpm/plugin`
 
@@ -125,8 +130,30 @@ All about the plugin instance.
 
 **Available properties and methods:**
 
-- `done` (function) - Used to mark that the plugin is done being used and can be released
-- `storage` (object) - Used to `get(k)` and `set(k, v)` data in the plugin. Both functions return a promise.
+#### `done`
+
+Function -> Null - Used to mark that the plugin is done being used and can be released.
+
+#### `storage`
+
+Object - Used to get and set data in the plugin. Both functions return a promise.
+
+#### `storage.set`
+
+Function -> Null - Set data with the plugin.
+
+Arguments:
+
+- `key` String - The key under which you'd like to store the data.
+- `value` String - The value you'd like to store. String support only.
+
+#### `storage.get`
+
+Function -> String - Get stored data from the plugin.
+
+Arguments:
+
+- `key` String - The key for the data you'd like to retrieve.
 
 ### `dtpm/document`
 
@@ -134,7 +161,27 @@ All about the document you're working with.
 
 **Available properties and methods:**
 
-- `selection` (object) - The current selection in the document
+#### `insert`
+
+Function -> Null - Insert the Node into the current context (artboard / page).
+
+Arguments:
+
+- `object` Node - The Node that you'd like to insert. This will have `.native` called on it, so it must be a DTPM Node.
+
+#### `Node`
+
+Class - The base layer class that all subsequent layers would inherit from. Do not use on its own.
+
+#### `Rectangle`
+
+Class - A rectangle shape layer.
+
+Arguments (object):
+
+- `name` String - The name of the node
+- `width` Number - The width of the rectangle
+- `height` Number - The height of the rectangle
 
 ---
 
@@ -143,12 +190,18 @@ Here's a super simple example of how you can work with the DTPM API:
 ```javascript
 // index.js
 
-import { selection } from 'dtpm/document';
+import { insert, Rectangle } from 'dtpm/document';
 import { storage, done } from 'dtpm/plugin';
 
 export async function firstCommand() {
-  // Log the current document selection
-  console.log(selection);
+  // Insert a rectangle in the page
+  const rectangle = new Rectangle({
+    name: 'Example',
+    width: 50,
+    height: 50
+  });
+
+  insert(rectangle);
 
   // Set and get a storage value
   const storageKey = 'example';

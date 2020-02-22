@@ -1,14 +1,15 @@
-import { /* selection, */ } from 'dtpm-core/document';
+import { root } from 'scenegraph';
+import { /* insert, */ } from 'dtpm-core/document';
 import { Rectangle } from './lib/nodes';
-import { Fill } from './lib/styles';
 
-function selection() {
-  const { selection } = require('scenegraph');
-  return selection;
-};
+function insert(object) {
+  if (!object.inserted) {
+    root.addChild(object.native());
+    object.inserted = true;
+  }
+}
 
 export {
-  selection,
+  insert,
   Rectangle,
-  Fill,
 };

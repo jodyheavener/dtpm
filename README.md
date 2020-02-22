@@ -188,7 +188,8 @@ Arguments (object):
 Here's a super simple example of how you can work with the DTPM API:
 
 ```javascript
-// index.js
+// index.js, assuming your manifest has a command
+// with the handler "firstCommand"
 
 import { insert, Rectangle } from 'dtpm/document';
 import { storage, done } from 'dtpm/plugin';

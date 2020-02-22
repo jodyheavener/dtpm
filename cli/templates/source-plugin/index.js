@@ -1,7 +1,13 @@
-export function firstCommand() {
-  // console.log('Running first command');
-}
+import { insert, Rectangle } from 'dtpm/document';
+import { done } from 'dtpm/plugin';
 
-export function secondCommand() {
-  // console.log('Running second command');
+export async function helloWorld() {
+  const rectangle = new Rectangle({
+    name: 'Example',
+    width: 50,
+    height: 50
+  });
+
+  insert(rectangle);
+  done();
 }

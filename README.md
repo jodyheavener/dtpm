@@ -140,7 +140,7 @@ Object - Used to get and set data in the plugin. Both functions return a promise
 
 #### `storage.set`
 
-Function -> Null - Set data with the plugin.
+Function -> Promise - Set data with the plugin.
 
 Arguments:
 
@@ -149,7 +149,7 @@ Arguments:
 
 #### `storage.get`
 
-Function -> String - Get stored data from the plugin.
+Function -> Promise - Get stored data from the plugin.
 
 Arguments:
 
